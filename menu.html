@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+
+<!-- Load UI5, select gold reflection theme and the "commons" and "table" control libraries -->
+  <script id='sap-ui-bootstrap' type='text/javascript'
+    src='https://openui5.hana.ondemand.com/resources/sap-ui-core.js'
+    data-sap-ui-theme='sap_bluecrystal'
+    data-sap-ui-libs='sap.ui.commons,sap.ui.table'></script>
+        <!-- only load the mobile lib "sap.m" and the "sap_bluecrystal" theme -->
+
+        <script>
+            //create the ApplicationHeader control
+		//create the ApplicationHeader control
+		var oAppHeader = new sap.ui.commons.ApplicationHeader("appHeader"); 
+
+		//configure the branding area
+		oAppHeader.setLogoSrc("http://www.sap.com/global/images/SAPLogo.gif");
+		oAppHeader.setLogoText("Create, Read, Update, Delete: Contacts");
+
+		//configure the welcome area
+		oAppHeader.setDisplayWelcome(true);
+		oAppHeader.setUserName("John Eswin Nizar");
+
+		//configure the log off area
+		oAppHeader.setDisplayLogoff(true);
+            oAppHeader.placeAt("content");
+            
+            // setting up model
+            var oModel = new sap.ui.model.json.JSONModel("http://localhost/crud/jsondata.php", false);
+            sap.ui.getCore().setModel(oModel);
+            
+            
+            /*****   CREATE Operation  *****/
+            function openCreateDialog(){ 
+                var oCreateDialog = new sap.ui.commons.Dialog();
+                oCreateDialog.setTitle("Create user");
+                var oSimpleForm = new sap.ui.layout.form.SimpleForm({
+                    maxContainerCols: 2,
+                    content:[
+                        new sap.ui.core.Title({text:"Person"}),
+                        new sap.ui.commons.Label({text:"Email"}),
+                        new sap.ui.commons.TextField({value:""}),
+                        new sap.ui.commons.Label({text:"Firstname"}),
+                        new sap.ui.commons.TextField({value:""}),
+                        new sap.ui.commons.Label({text:"Lastname"}),
+                        new sap.ui.commons.TextField({value:""}),
+                        new sap.ui.commons.Label({text:"Age"}),
+                        new sap.ui.commons.TextField({value:""}),
+                        new sap.ui.commons.Label({text:"Address"}),
+                        new sap.ui.commons.TextField({value:""}),
+                    ]
+                });                
+                oCreateDialog.addContent(oSimpleForm);
+                oCreateDialog.addButton(
+                    new sap.ui.commons.Button({
+                        text: "Submit", 
+                        press: function() {
+                            var content = oSimpleForm.getContent();
+                            var oEntry = {};
+                            oEntry.Email = content[2].getValue();
+                            oEntry.Firstname = content[4].getValue();
+                            oEntry.Lastname = content[6].getValue();
+                            oEntry.Age = content[8].getValue();
+                            oEntry.Address = content[10].getValue();
+                            
+                            // Post data to the server
+                            oModel.loadData("http://localhost/crud/adddata.php", oEntry, true, 'POST');
+							location.reload();	
+                        }
+                    })
+                );
+                oCreateDialog.open();
+            };        
+            
+            /*****   PUT Operation  *****/
+            function openUpdateDialog(user){ 
+                var oUpdateDialog = new sap.ui.commons.Dialog();
+                oUpdateDialog.setTitle("Update user's data");
+                var oSimpleForm = new sap.ui.layout.form.SimpleForm({
+                    maxContainerCols: 2,
+                    content:[
+                        new sap.ui.core.Title({text:"Person"}),
+                        new sap.ui.commons.Label({text:"Email"}),
+                        new sap.ui.commons.TextField({value: user[0].getValue(), editable: false}),
+                        new sap.ui.commons.Label({text:"Firstname"}),
+                        new sap.ui.commons.TextField({value: user[1].getValue()}),
+                        new sap.ui.commons.Label({text:"Lastname"}),
+                        new sap.ui.commons.TextField({value: user[2].getValue()}),
+                        new sap.ui.commons.Label({text:"Age"}),
+                        new sap.ui.commons.TextField({value: user[3].getValue()}),
+                        new sap.ui.commons.Label({text:"Address"}),
+                        new sap.ui.commons.TextField({value: user[4].getValue()}),
+                    ]
+                });                
+                oUpdateDialog.addContent(oSimpleForm);
+                oUpdateDialog.addButton(
+                    new sap.ui.commons.Button({
+                        text: "Submit", 
+                        press: function() {
+                            var content = oSimpleForm.getContent();
+                            var oEntry = {};
+                            oEntry.Email = content[2].getValue();
+                            oEntry.Firstname = content[4].getValue();
+                            oEntry.Lastname = content[6].getValue();
+                            oEntry.Age = content[8].getValue();
+
+                            oEntry.Address = content[10].getValue();
+                            // Post data to the server
+                            oModel.loadData("http://localhost/crud/editdata.php?email=oEntry.Email", oEntry, true, 'POST');						      oUpdateDialog.close();
+								location.reload();								   
+                        }
+                    })
+                );
+                oUpdateDialog.open();
+            };
+            
+            /*****   DELETE Operation  *****/
+            function openDeleteDialog(user) { 
+                var oDeleteDialog = new sap.ui.commons.Dialog();
+                oDeleteDialog.setTitle("Delete user");
+                var oSimpleForm = new sap.ui.layout.form.SimpleForm({
+                    maxContainerCols: 2,
+                    content:[
+                        new sap.ui.core.Title({text:"Person"}),
+                        new sap.ui.commons.Label({text:"Email"}),
+                        new sap.ui.commons.TextField({value: user[0].getValue(), editable: false}),
+                        new sap.ui.commons.Label({text:"Firstname"}),
+                        new sap.ui.commons.TextField({value: user[1].getValue(), editable: false}),
+                        new sap.ui.commons.Label({text:"Lastname"}),
+                        new sap.ui.commons.TextField({value: user[2].getValue(), editable: false}),
+                        new sap.ui.commons.Label({text:"Age"}),
+                        new sap.ui.commons.TextField({value: user[3].getValue(), editable: false}),
+                        new sap.ui.commons.Label({text:"Address"}),
+                        new sap.ui.commons.TextField({value: user[4].getValue(), editable: false}),
+                    ]
+                });                
+                oDeleteDialog.addContent(oSimpleForm);
+                oDeleteDialog.addButton(
+                    new sap.ui.commons.Button({
+                        text: "Submit", 
+                        press: function() {
+                            var content = oSimpleForm.getContent();
+                            var oEntry = {};
+                            oEntry.Email = content[2].getValue();
+                            oEntry.Firstname = content[4].getValue();
+                            oEntry.Lastname = content[6].getValue();
+                            oEntry.Age = content[8].getValue();
+
+                            oEntry.Address = content[10].getValue();
+                            // Post data to the server
+                            oModel.loadData("http://localhost/crud/deletedata.php?email=oEntry.Email", oEntry, true, 'POST');	 							   
+								oDeleteDialog.close();
+								location.reload();	
+                        }
+                    })
+                );
+                oDeleteDialog.open();
+            };
+            // setting up table
+            var oTable = new sap.ui.table.Table({
+                editable: false,
+                toolbar: new sap.ui.commons.Toolbar({ 
+                    items: [ 
+                        new sap.ui.commons.Button({
+                            text: "Create user", 
+                            press: function() {
+                                openCreateDialog();
+                            }, 
+                        }),
+                        new sap.ui.commons.Button({
+                            text: "Update user's data", 
+                            press: function() {
+                                var idx = oTable.getSelectedIndex();
+                                if (idx == -1) return;
+                                var rows = oTable.getRows();
+                                var user = rows[idx].getCells();
+                                openUpdateDialog(user);
+                            }, 
+                        }),
+                        new sap.ui.commons.Button({
+                            text: "Delete user", 
+                            press: function() {
+                                var idx = oTable.getSelectedIndex();
+                                if (idx == -1) return;
+                                var rows = oTable.getRows();
+                                var user = rows[idx].getCells();
+                                openDeleteDialog(user);
+                            }, 
+                        })				
+                    ]
+                }),
+            });
+        
+            oTable.addColumn(new sap.ui.table.Column({
+                label: new sap.ui.commons.Label({text: "Email"}),
+                template: new sap.ui.commons.TextField().bindProperty("value", "email"),
+                editable: false,
+                sortProperty: "email"
+            }));
+        
+            oTable.addColumn(new sap.ui.table.Column({
+                label: new sap.ui.commons.Label({text: "Firstname"}),
+                template: new sap.ui.commons.TextField().bindProperty("value", "firstname"),
+                sortProperty: "firstname",
+                editable: false,
+            }));
+        
+            oTable.addColumn(new sap.ui.table.Column({
+                label: new sap.ui.commons.Label({text: "Lastname"}),
+                template: new sap.ui.commons.TextField().bindProperty("value", "lastname"),
+                sortProperty: "lastname",
+                editable: false,
+            }));
+        
+            oTable.addColumn(new sap.ui.table.Column({
+                label: new sap.ui.commons.Label({text: "Age"}),
+                template: new sap.ui.commons.TextField().bindProperty("value", "age"),
+                sortProperty: "age",
+                editable: false,
+            }));
+        
+            oTable.addColumn(new sap.ui.table.Column({
+                label: new sap.ui.commons.Label({text: "Address"}),
+                template: new sap.ui.commons.TextField().bindProperty("value", "address"),
+                sortProperty: "address",
+                editable: false,
+            }));
+            
+            
+            oTable.setModel(oModel);
+            oTable.bindRows("/UserSet");
+            oTable.placeAt("content");
+        
+        </script>
+
+    </head>
+    <body class="sapUiBody" role="application">
+        <div id="content"></div>
+    </body>
+</html>
